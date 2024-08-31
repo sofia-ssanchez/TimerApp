@@ -19,6 +19,7 @@ class Timer: UIViewController, UINavigationControllerDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = colors.lightPink
+        print("Halllooooo")
         
     }
     
