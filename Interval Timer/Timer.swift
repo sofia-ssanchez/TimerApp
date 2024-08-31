@@ -20,6 +20,7 @@ class Timer: UIViewController, UINavigationControllerDelegate {
         super.viewDidLoad()
         view.backgroundColor = colors.lightPink
         print("Halllooooo")
+        print(" hallo again")
         
     }
     
