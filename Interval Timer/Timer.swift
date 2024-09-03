@@ -19,9 +19,19 @@ class Timer: UIViewController, UINavigationControllerDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = colors.lightPink
-        print("Halllooooo")
-        print(" hallo again")
+        print(workout)
+        
+        if let warmUpTime = workout?.warmUpTime,
+        let highIntensityTime = workout?.highIntensityTime,
+        let lowIntensityTime = workout?.lowIntensityTime,
+        let numberOfSets = workout?.numberOfSets,
+        let numberOfCycles = workout?.numberOfCycles,
+        let breakTime = workout?.breakTime
+        {
+            let numberOfIntervals = 1 + (numberOfSets * numberOfCycles * 2) + numberOfCycles
+            print (numberOfIntervals)
+        }
+        
         
     }
-    
 }

@@ -20,16 +20,19 @@ class ViewController: UIViewController, NewWorkoutDelegate, TimerDelegate {
         var lowIntensityTime: TimeInterval
         var numberOfSets: Int
         var numberOfCycles: Int
+        var breakTime: TimeInterval
         var workoutName: String
 
-        init(warmUpTime: TimeInterval, highIntensityTime: TimeInterval, lowIntensityTime: TimeInterval, numberOfSets: Int, numberOfCycles: Int, workoutName: String) {
+        init(warmUpTime: TimeInterval, highIntensityTime: TimeInterval, lowIntensityTime: TimeInterval, numberOfSets: Int, numberOfCycles: Int, breakTime: TimeInterval, workoutName: String) {
             self.id = UUID()
             self.warmUpTime = warmUpTime
             self.highIntensityTime = highIntensityTime
             self.lowIntensityTime = lowIntensityTime
             self.numberOfSets = numberOfSets
             self.numberOfCycles = numberOfCycles
+            self.breakTime = breakTime
             self.workoutName = workoutName
+            
         }
     }
     

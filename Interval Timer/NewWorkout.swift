@@ -4,7 +4,7 @@ protocol NewWorkoutDelegate: AnyObject {
     func didSaveWorkout( _ workout: ViewController.Workout)
 }
 
-class NewWorkout: UIViewController, UITextFieldDelegate, WarmUpTimePickerDelegate, NumberOfSetsPickerDelegate, HighIntensityTimePickerDelegate, LowIntensityTimePickerDelegate, NumCyclesPickerDelegate ,UINavigationControllerDelegate {
+class NewWorkout: UIViewController, UITextFieldDelegate, WarmUpTimePickerDelegate, NumberOfSetsPickerDelegate, HighIntensityTimePickerDelegate, LowIntensityTimePickerDelegate, NumCyclesPickerDelegate, BreakPickerDelegate, UINavigationControllerDelegate {
     
     let timerName = UITextField()
     var name = "name"
@@ -25,6 +25,9 @@ class NewWorkout: UIViewController, UITextFieldDelegate, WarmUpTimePickerDelegat
     let numCycleLabel = UILabel()
     let numCyclesButton = UIButton()
     var cycles = 1
+    let breakLabel = UILabel()
+    let breakButton = UIButton()
+    var breakTime: TimeInterval = 0
     
     
     weak var delegate: NewWorkoutDelegate?
@@ -58,10 +61,12 @@ class NewWorkout: UIViewController, UITextFieldDelegate, WarmUpTimePickerDelegat
         
         numCycleLabel.text = "Number of Cycles"
         
+        breakLabel.text = "Break Between Cycles"
+        
         
         // grouping all the views so the step after doesnt need to be repeated for each element
         let views = [
-            timerName, typeLabel, typeControl, warmUpLabel, warmUpButton, intervalCycleLabel, numSetsButton, highIntensityLabel, highIntensityButton, lowIntensityLabel, lowIntensityButton, numCycleLabel, numCyclesButton
+            timerName, typeLabel, typeControl, warmUpLabel, warmUpButton, intervalCycleLabel, numSetsButton, highIntensityLabel, highIntensityButton, lowIntensityLabel, lowIntensityButton, numCycleLabel, numCyclesButton, breakLabel, breakButton
         ]
         
         for view in views {
@@ -99,6 +104,10 @@ class NewWorkout: UIViewController, UITextFieldDelegate, WarmUpTimePickerDelegat
         numCyclesButton.backgroundColor = .white
         numCyclesButton.addTarget(self, action: #selector(openNumCyclesPicker), for: .touchUpInside)
         
+        breakButton.setTitle("00:00", for: .normal)
+        breakButton.setTitleColor(.black, for: .normal)
+        breakButton.backgroundColor = .white
+        breakButton.addTarget(self, action: #selector(openBreakPicker), for: .touchUpInside)
         
         
         // Layout
@@ -142,7 +151,13 @@ class NewWorkout: UIViewController, UITextFieldDelegate, WarmUpTimePickerDelegat
             numCycleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             numCyclesButton.topAnchor.constraint(equalTo: numCycleLabel.bottomAnchor, constant: 5),
             numCyclesButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            numCyclesButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20)
+            numCyclesButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            
+            breakLabel.topAnchor.constraint(equalTo: numCyclesButton.bottomAnchor, constant: 20),
+            breakLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            breakButton.topAnchor.constraint(equalTo: breakLabel.bottomAnchor, constant: 5),
+            breakButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            breakButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20)
             
         ])
     }
@@ -150,7 +165,7 @@ class NewWorkout: UIViewController, UITextFieldDelegate, WarmUpTimePickerDelegat
   // To save the workout
     @objc func saveWorkoutDetails() {
         name = timerName.text ?? "New Workout"
-        let newWorkout = ViewController.Workout(warmUpTime: warmUpTime, highIntensityTime: highIntensityTime, lowIntensityTime: lowIntensityTime, numberOfSets: sets, numberOfCycles: cycles, workoutName: name)
+        let newWorkout = ViewController.Workout(warmUpTime: warmUpTime, highIntensityTime: highIntensityTime, lowIntensityTime: lowIntensityTime, numberOfSets: sets, numberOfCycles: cycles, breakTime: breakTime,workoutName: name)
         // Notify delegate
         delegate?.didSaveWorkout(newWorkout)
         // Pop page and navigate back to previous view controller
@@ -228,6 +243,22 @@ class NewWorkout: UIViewController, UITextFieldDelegate, WarmUpTimePickerDelegat
     func didSelectNumCycles( _ numCycles: Int){
         cycles = numCycles
         numCyclesButton.setTitle("\(cycles) Set" + (cycles > 1 ? "s" : ""), for: .normal)
+    }
+    
+    @objc func openBreakPicker(){
+        let breakPickerVC = BreakPickerViewController()
+        breakPickerVC.timeType = "Break"
+        breakPickerVC.delegate = self
+        navigationController?.pushViewController(breakPickerVC, animated: true)
+    }
+    
+    func didSelectBreakTime(time time: TimeInterval, forType type: String){
+        if type == "Break"{
+            breakTime = time
+            let minutes = Int(time)/60
+            let seconds = Int(time) % 60
+            breakButton.setTitle(String(format: "%02d:%02d", minutes, seconds), for: .normal)
+        }
     }
 }
 
