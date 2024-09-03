@@ -253,7 +253,7 @@ class NewWorkout: UIViewController, UITextFieldDelegate, WarmUpTimePickerDelegat
     }
     
     func didSelectBreakTime(time time: TimeInterval, forType type: String){
-        if type == "Break"{
+        if type == "Break" {
             breakTime = time
             let minutes = Int(time)/60
             let seconds = Int(time) % 60

@@ -6,11 +6,7 @@ protocol CustomTimePickerDelegate: AnyObject {
 
 class CustomTimePickerView: UIView, UIPickerViewDelegate, UIPickerViewDataSource {
     weak var delegate: CustomTimePickerDelegate?
-    var timeType: String? {
-        didSet {
-            print("CustomTimePickerView: timeType set to \(String(describing: timeType))")
-        }
-    }
+    var timeType: String? 
     
     let pickerView = UIPickerView()
     let minutes = Array(0...59)

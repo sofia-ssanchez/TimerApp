@@ -137,7 +137,7 @@ class ViewController: UIViewController, NewWorkoutDelegate, TimerDelegate {
     @objc func workoutButtonClicked(_ sender: UIButton){
         let workoutIndex = sender.tag
         let selectedWorkout = workouts[workoutIndex]
-        let timer = Timer()
+        let timer = TimerViewController()
         timer.delegate = self
         timer.workout = selectedWorkout
         navigationController?.pushViewController(timer, animated: true)
