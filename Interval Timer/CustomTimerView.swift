@@ -20,11 +20,51 @@ class CustomTimerView: UIView {
     private var timeRemaining: TimeInterval = 0
     private let timerLabel: UILabel = {
         let label = UILabel()
-        label.font = UIFont.systemFont(ofSize: 40)
+        label.font = UIFont.systemFont(ofSize: 70)
         label.textAlignment = .center
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
+    
+    private let typeLabel: UILabel = {
+        let label = UILabel()
+        label.font = UIFont.systemFont(ofSize: 30)
+        label.textAlignment = .left
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+    
+    private let bottomColoredView: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = .clear
+        return view
+    }()
+    
+    enum TimerState {
+        case warmup
+        case high
+        case low
+        case rest
+        
+        var displayName: String {
+                 switch self {
+                 case .warmup: return "Warm Up"
+                 case .high: return "High Intensity"
+                 case .low: return "Low Intensity"
+                 case .rest: return "Break"
+                 }
+             }
+        
+        var timerColor: UIColor {
+            switch self {
+            case .warmup: return colors.lightYellow
+            case .high: return colors.lightRed
+            case .low: return colors.lightGreen
+            case .rest: return colors.lightBlue
+            }
+        }
+    }
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -37,18 +77,34 @@ class CustomTimerView: UIView {
     }
     
     private func setupView() {
-        addSubview(timerLabel)
+        addSubview(bottomColoredView)
+        bottomColoredView.addSubview(timerLabel)
+        bottomColoredView.addSubview(typeLabel)
+
         
-        // Center the label in the view
         NSLayoutConstraint.activate([
-            timerLabel.centerXAnchor.constraint(equalTo: centerXAnchor),
-            timerLabel.centerYAnchor.constraint(equalTo: centerYAnchor)
+            bottomColoredView.leadingAnchor.constraint(equalTo: leadingAnchor),
+            bottomColoredView.trailingAnchor.constraint(equalTo: trailingAnchor),
+            bottomColoredView.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor),
+            bottomColoredView.heightAnchor.constraint(equalTo: safeAreaLayoutGuide.heightAnchor, multiplier: 0.6) // 40% of screen height
         ])
+        
+        NSLayoutConstraint.activate([
+            timerLabel.centerXAnchor.constraint(equalTo: bottomColoredView.centerXAnchor),
+            timerLabel.centerYAnchor.constraint(equalTo: bottomColoredView.centerYAnchor)
+        ])
+        
+        NSLayoutConstraint.activate([
+                 typeLabel.centerXAnchor.constraint(equalTo: bottomColoredView.centerXAnchor),
+                 typeLabel.bottomAnchor.constraint(equalTo: timerLabel.topAnchor, constant: -10)
+             ])
     }
     
-    func startTimer(with duration: TimeInterval) {
+    func startTimer(with duration: TimeInterval, state: TimerState) {
         timeRemaining = duration
         updateLabel()
+        updateBackgroundColor(for: state)
+        typeLabel.text = state.displayName
         timer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(updateTimer), userInfo: nil, repeats: true)
     }
     
@@ -68,6 +124,19 @@ class CustomTimerView: UIView {
         timerLabel.text = String(format: "%02d:%02d", minutes, seconds)
     }
     
+    private func updateBackgroundColor(for state: TimerState) {
+        switch state {
+        case .warmup:
+            bottomColoredView.backgroundColor = colors.lightYellow
+        case .high:
+            bottomColoredView.backgroundColor = colors.lightRed
+        case .low:
+            bottomColoredView.backgroundColor = colors.lightGreen
+        case .rest:
+            bottomColoredView.backgroundColor = colors.lightBlue
+        }
+    }
+
     deinit {
         timer?.invalidate()
     }

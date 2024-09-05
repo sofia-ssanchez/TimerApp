@@ -20,7 +20,7 @@ class TimerViewController: UIViewController, UINavigationControllerDelegate, Cus
     var workout: ViewController.Workout?
     weak var delegate: TimerDelegate?
     private let customTimerView = CustomTimerView()
-    private var timers: [TimeInterval] = []
+    private var timers: [TimerDetails] = []
     private var currentTimerIndex = 0
     
     override func viewDidLoad() {
@@ -41,15 +41,20 @@ class TimerViewController: UIViewController, UINavigationControllerDelegate, Cus
         startNextTimer()
     }
     
-    private func fillTimeInterval(warmUpTime: TimeInterval, highInterval: TimeInterval, lowInterval: TimeInterval, numberOfSets: Int, numberOfCycles: Int, breakTime: TimeInterval) -> [TimeInterval] {
-        var timers: [TimeInterval] = []
-        timers.append(warmUpTime)
+    struct TimerDetails {
+        let duration: TimeInterval
+        let type: CustomTimerView.TimerState
+    }
+    
+    private func fillTimeInterval(warmUpTime: TimeInterval, highInterval: TimeInterval, lowInterval: TimeInterval, numberOfSets: Int, numberOfCycles: Int, breakTime: TimeInterval) -> [TimerDetails] {
+        var timers: [TimerDetails] = []
+        timers.append(TimerDetails(duration:warmUpTime, type: .warmup))
         for _ in 1...numberOfCycles {
             for _ in 1...numberOfSets {
-                timers.append(highInterval)
-                timers.append(lowInterval)
+                timers.append(TimerDetails(duration: highInterval, type: .high))
+                timers.append(TimerDetails(duration: lowInterval, type: .low))
             }
-            timers.append(breakTime)
+            timers.append(TimerDetails(duration:breakTime, type: .rest))
         }
         return timers
     }
@@ -60,16 +65,15 @@ class TimerViewController: UIViewController, UINavigationControllerDelegate, Cus
         view.addSubview(customTimerView)
         
         NSLayoutConstraint.activate([
-            customTimerView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            customTimerView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-            customTimerView.widthAnchor.constraint(equalToConstant: 200),
-            customTimerView.heightAnchor.constraint(equalToConstant: 100)
+            customTimerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            customTimerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            customTimerView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 40),
+            customTimerView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.6)
         ])
     }
     
     private func startNextTimer() {
-        if currentTimerIndex < timers.count {
-            customTimerView.startTimer(with: timers[currentTimerIndex])
+        if currentTimerIndex < timers.count {            customTimerView.startTimer(with: timers[currentTimerIndex].duration, state: timers[currentTimerIndex].type)
             currentTimerIndex += 1
         } else {
             print("All timers completed")
