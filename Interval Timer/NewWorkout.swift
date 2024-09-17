@@ -4,7 +4,8 @@ protocol NewWorkoutDelegate: AnyObject {
     func didSaveWorkout( _ workout: ViewController.Workout)
 }
 
-class NewWorkout: UIViewController, UITextFieldDelegate, WarmUpTimePickerDelegate, NumberOfSetsPickerDelegate, HighIntensityTimePickerDelegate, LowIntensityTimePickerDelegate, NumCyclesPickerDelegate, BreakPickerDelegate, UINavigationControllerDelegate {
+class NewWorkout: UIViewController, UITextFieldDelegate, WarmUpTimePickerDelegate, NumberOfSetsPickerDelegate, HighIntensityTimePickerDelegate, LowIntensityTimePickerDelegate, NumCyclesPickerDelegate, BreakPickerDelegate, MediaAdderDelegate, UINavigationControllerDelegate {
+    
     
     let timerName = UITextField()
     var name = "name"
@@ -28,6 +29,7 @@ class NewWorkout: UIViewController, UITextFieldDelegate, WarmUpTimePickerDelegat
     let breakLabel = UILabel()
     let breakButton = UIButton()
     var breakTime: TimeInterval = 0
+    let picturesButton = UIButton()
     
     
     weak var delegate: NewWorkoutDelegate?
@@ -66,7 +68,7 @@ class NewWorkout: UIViewController, UITextFieldDelegate, WarmUpTimePickerDelegat
         
         // grouping all the views so the step after doesnt need to be repeated for each element
         let views = [
-            timerName, typeLabel, typeControl, warmUpLabel, warmUpButton, intervalCycleLabel, numSetsButton, highIntensityLabel, highIntensityButton, lowIntensityLabel, lowIntensityButton, numCycleLabel, numCyclesButton, breakLabel, breakButton
+            timerName, typeLabel, typeControl, warmUpLabel, warmUpButton, intervalCycleLabel, numSetsButton, highIntensityLabel, highIntensityButton, lowIntensityLabel, lowIntensityButton, numCycleLabel, numCyclesButton, breakLabel, breakButton, picturesButton
         ]
         
         for view in views {
@@ -108,6 +110,11 @@ class NewWorkout: UIViewController, UITextFieldDelegate, WarmUpTimePickerDelegat
         breakButton.setTitleColor(.black, for: .normal)
         breakButton.backgroundColor = .white
         breakButton.addTarget(self, action: #selector(openBreakPicker), for: .touchUpInside)
+        
+        picturesButton.setTitle("Add Media", for: .normal)
+        picturesButton.setTitleColor(.black, for: .normal)
+        picturesButton.backgroundColor = colors.darkPink
+        picturesButton.addTarget(self, action: #selector(openMediaAdder), for: .touchUpInside)
         
         
         // Layout
@@ -157,7 +164,12 @@ class NewWorkout: UIViewController, UITextFieldDelegate, WarmUpTimePickerDelegat
             breakLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             breakButton.topAnchor.constraint(equalTo: breakLabel.bottomAnchor, constant: 5),
             breakButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            breakButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20)
+            breakButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            
+            picturesButton.topAnchor.constraint(equalTo: breakButton.bottomAnchor, constant: 30),
+            picturesButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            picturesButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            picturesButton.heightAnchor.constraint(equalToConstant: 50)
             
         ])
     }
@@ -260,6 +272,24 @@ class NewWorkout: UIViewController, UITextFieldDelegate, WarmUpTimePickerDelegat
             breakButton.setTitle(String(format: "%02d:%02d", minutes, seconds), for: .normal)
         }
     }
+    
+    @objc func openMediaAdder(){
+        let mediaAdderVC = MediaAdderViewController()
+        mediaAdderVC.numberOfSets = sets
+        mediaAdderVC.delegate = self
+        navigationController?.pushViewController(mediaAdderVC, animated: true)
+    }
+    
+    func didAddMedia(_ media: [MediaType]) {
+        
+    }
+    
 }
+        enum MediaType {
+            case pictures(UIImage)
+            case video(URL)
+            case label(String)
+        }
+        var mediaArray: [MediaType] = []
 
 
